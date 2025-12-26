@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/src/extension_instance.dart';
-import '../../main.dart';
 
 class AppColors {
   // ============== Light Theme Colors (Updated) ==============

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../components/app_colors.dart'; // Ensure your primary colors are here
 
 class VerificationScreen extends StatelessWidget {
   const VerificationScreen({super.key});
@@ -50,7 +49,7 @@ class VerificationScreen extends StatelessWidget {
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('doctors')
-                    .where('isVerified', isEqualTo: 'pending')
+                    .where('isApproved', isEqualTo: false)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
@@ -224,9 +223,13 @@ class VerificationScreen extends StatelessWidget {
     try {
       WriteBatch batch = FirebaseFirestore.instance.batch();
       DocumentReference drRef = FirebaseFirestore.instance.collection('doctors').doc(uid);
-      batch.update(drRef, {'isVerified': status});
+      
+      // Update isApproved based on status
+      bool isApproved = status == 'approved';
+      batch.update(drRef, {'isApproved': isApproved});
+      
       DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(uid);
-      batch.update(userRef, {'isVerified': status});
+      batch.update(userRef, {'isApproved': isApproved});
 
       await batch.commit();
 

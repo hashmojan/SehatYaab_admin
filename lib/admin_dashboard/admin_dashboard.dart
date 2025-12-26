@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:get/get.dart';
 import '../components/app_colors.dart';
 import '../report/report_screen.dart';
 import '../verificatoin/verification_screen.dart';
+import '../auth_screen/admin_login.dart';
 
 class AdminDashboard extends StatefulWidget {
   @override
@@ -175,7 +178,6 @@ class _AdminDashboardState extends State<AdminDashboard> {
   }
 
   void _handleLogout(BuildContext context) {
-    // Add your logout logic here
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -185,9 +187,22 @@ class _AdminDashboardState extends State<AdminDashboard> {
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
           ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              onPressed: () {
-                // Perform Logout
-                Navigator.pop(context);
+              onPressed: () async {
+                try {
+                  // Sign out from Firebase
+                  await FirebaseAuth.instance.signOut();
+                  
+                  // Close dialog
+                  Navigator.pop(context);
+                  
+                  // Navigate to login screen
+                  Get.offAll(() => AdminLoginScreen());
+                } catch (e) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Error logging out: ${e.toString()}")),
+                  );
+                }
               },
               child: const Text("Logout", style: TextStyle(color: Colors.white))
           ),
